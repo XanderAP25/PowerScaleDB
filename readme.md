@@ -87,27 +87,18 @@ Verse (1)
 ## TODO
 
 ### Core Enhancements
-- Add **character editing** UI  
-- Add **key editing** UI  
-- Add delete functionality for characters, keys, hax, and verses  
 - Add filtering/sorting by speed, tier, AP range, and hax groups  
 
 ### Export / Analysis Features
 - Export keys as JSON, CSV, and Markdown  
 - Add cross-verse comparison tools  
 - Add AP/tier visualization charts  
-- Implement derived-stats systems (scaling chains, feat stacking)  
 
 ### UI / UX Improvements
-- Add dark/light theme toggle  
-- Improve mobile responsiveness  
 - Add navigation breadcrumbs  
 - Add table search functionality  
 
 ### Optional Long-Term Goals
-- User accounts / authentication  
-- Online sync mode (PostgreSQL)  
-- Automated AP → Tier calibration logic  
 - Hax categorization into functional groups  
 
 ---
