@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Verses</h2>
+
+<a class="btn" href="{{ url_for('main.add_verse') }}">Add New Verse</a>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for v in verses %}
+    <tr>
+        <td><a href="{{ url_for('main.verse_detail', verse_id=v.id) }}">{{ v.name }}</a></td>
+        <td>
+            <form action="{{ url_for('main.delete_verse', verse_id=v.id) }}"
+                method="POST"
+                onsubmit="return confirm('Delete this verse and all associated characters?');"
+                style="display:inline;">
+                <button class="btn" style="background:#700;">Delete</button>
+            </form>
+
+            <a class="btn" href="{{ url_for('main.edit_verse', verse_id=v.id) }}">Edit Verse</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

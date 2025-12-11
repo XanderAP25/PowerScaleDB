@@ -4,6 +4,9 @@
 
 <h2>{{ verse.name }} — Keys</h2>
 
+<a class="btn" href="{{ url_for('main.edit_verse', verse_id=verse.id) }}">Edit Verse</a>
+
+
 {% if keys %}
 <table>
     <tr>

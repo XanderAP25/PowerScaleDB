@@ -3,12 +3,13 @@
 {% block content %}
 <h2>Hax List</h2>
 
-<a class="btn" href="{{ url_for('add_hax') }}">Add New Hax</a>
+<a class="btn" href="{{ url_for('main.add_hax') }}">Add New Hax</a>
 
 <table>
     <tr>
         <th>Name</th>
         <th>Used By</th>
+        <th>Actions</th>
     </tr>
 
     {% for h in hax %}
@@ -22,6 +23,17 @@
             {% else %}
                 <i>Unused</i>
             {% endif %}
+        </td>
+        <td>
+            <form action="{{ url_for('main.delete_hax', hax_id=h.id) }}"
+                method="POST"
+                onsubmit="return confirm('Delete this hax?');"
+                style="display:inline;">
+                <button class="btn" style="background:#700;">Delete</button>
+            </form>
+
+            <a class="btn" href="{{ url_for('main.edit_hax', hax_id=h.id) }}">Edit</a>
+
         </td>
     </tr>
     {% endfor %}

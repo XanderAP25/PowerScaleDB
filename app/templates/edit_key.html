@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Edit Key for {{ character.name }}</h2>
+
+<form method="post">
+
+    <label>Key Name</label>
+    <input type="text" name="key_name" value="{{ key.key_name }}" required>
+
+    <label>Attack Potency</label>
+    <select name="ap" id="ap-select" onchange="syncDurability(); syncTier();">
+        {% for a in AP %}
+            <option {% if key.ap == a %}selected{% endif %}>{{ a }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Durability</label>
+    <select name="durability" id="durability-select">
+        {% for d in durs %}
+            <option {% if key.durability == d %}selected{% endif %}>{{ d }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Speed</label>
+    <select name="speed">
+        {% for s in speeds %}
+            <option {% if key.speed == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Tier</label>
+    <select name="tier" id="tier-select">
+        {% for t in tiers %}
+            <option {% if key.tier == t %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Hax</label>
+    <select name="hax_list" multiple="multiple" id="hax-select">
+        {% for h in all_hax %}
+            <option value="{{ h.id }}"
+                {% if h in key.hax %}selected{% endif %}>
+                {{ h.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label>Notes</label>
+    <textarea name="notes" rows="4">{{ key.notes }}</textarea>
+
+    <button class="btn" type="submit">Save</button>
+</form>
+
+<!-- Select2 initialization -->
+<script>
+$(document).ready(function() {
+    $("#hax-select").select2({
+        tags: true,
+        width: "600px",
+        tokenSeparators: [',']
+    });
+});
+</script>
+
+{% endblock %}

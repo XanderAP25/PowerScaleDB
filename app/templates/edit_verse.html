@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Edit Verse</h2>
+
+<form method="post">
+    <label>Name</label>
+    <input type="text" name="name" value="{{ verse.name }}" required>
+
+    <button class="btn" type="submit">Save</button>
+</form>
+
+{% endblock %}

@@ -10,7 +10,31 @@
     <style>
         body { background: #111; color: #eee; font-family: sans-serif; padding: 20px; }
         a { color: #7fdcff; }
-        .btn { padding: 4px 8px; background: #222; border: 1px solid #555; border-radius: 4px; color: #eee; }
+
+        /* Normalize buttons & links */
+        .btn {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #222;
+            border: 1px solid #555;
+            border-radius: 4px;
+            color: #eee !important;
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+            line-height: 1.4;
+        }
+
+        .btn:hover {
+            background: #333;
+        }
+
+        /* Ensure actual <button> elements match <a> */
+        button.btn {
+            font-family: inherit;
+            background: #222;
+            color: #eee;
+        }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #333; padding: 6px; }
 
@@ -66,11 +90,14 @@
 <body>
 
 <header>
-    <a href="/" class="btn">Characters</a>
-    <a href="/add" class="btn">Add Character</a>
-    <a href="/keys" class="btn">All Keys</a>
-    <a href="/verses" class="btn">Verses</a>
-    <a href="{{ url_for('hax_list') }}" class="btn">Hax</a>
+    <a href="{{ url_for('main.index') }}" class="btn">Characters</a>
+
+    <a href="{{ url_for('main.all_keys') }}" class="btn">Keys</a>
+
+    <a href="{{ url_for('main.verses_list') }}" class="btn">Verses</a>
+
+    <a href="{{ url_for('main.hax_list') }}" class="btn">Hax</a>  
+
 </header>
 
 <hr>

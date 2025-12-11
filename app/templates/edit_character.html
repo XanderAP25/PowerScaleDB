@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Edit Character</h2>
+
+<form method="post">
+    <label>Name</label>
+    <input type="text" name="name" value="{{ character.name }}" required>
+
+    <label>Verse</label>
+    <select name="verse_id">
+        {% for v in verses %}
+            <option value="{{ v.id }}" {% if v.id == character.verse_id %}selected{% endif %}>
+                {{ v.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <button class="btn" type="submit">Save</button>
+</form>
+
+{% endblock %}
