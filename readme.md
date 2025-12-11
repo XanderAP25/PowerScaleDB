@@ -12,6 +12,9 @@ A Flask web application used to store, organize, and analyze fictional character
 
 ## Setup
 python -m venv .venv
+
 .venv\Scripts\activate
+
 pip install -r requirements.txt
+
 flask run
