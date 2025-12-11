@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Add Hax</h2>
+
+<form method="post">
+
+    {% if error %}
+    <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <label>Hax Name</label>
+    <input type="text" name="name" required>
+
+    <button type="submit" class="btn">Save Hax</button>
+</form>
+
+{% endblock %}

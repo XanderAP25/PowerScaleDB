@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Add Character</h2>
+
+<form method="post">
+
+    <label>Name</label>
+    <input type="text" name="name" required>
+
+    <label>Verse</label>
+
+    <select name="verse_id" id="verse-select">
+        <option value="">-- Select Existing Verse --</option>
+        {% for v in verses %}
+            <option value="{{ v.id }}">{{ v.name }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Or Create New Verse</label>
+    <input type="text" name="new_verse" placeholder="Enter new verse name">
+
+
+    <h3>Optional: Create First Key</h3>
+
+    <label>Key Name</label>
+    <input type="text" name="key_name">
+
+    <label>Attack Potency</label>
+    <select name="ap" id="ap-select" onchange="syncDurability(); syncTier();">
+        {% for a in AP %}
+        <option>{{ a }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Durability</label>
+    <select name="durability" id="durability-select">
+        {% for d in durs %}
+        <option>{{ d }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Speed</label>
+    <select name="speed">
+        {% for s in speeds %}
+        <option>{{ s }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Tier</label>
+    <select name="tier" id="tier-select">
+        {% for t in tiers %}
+        <option>{{ t }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Hax</label>
+    <select name="hax_list" multiple id="hax-select">
+        {% for h in all_hax %}
+        <option value="{{ h.id }}">{{ h.name }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Notes</label>
+    <textarea name="notes" rows="4"></textarea>
+
+    <button class="btn" type="submit">Save Character</button>
+
+</form>
+
+
+<script>
+    const AP_TO_TIER = {{ ap_to_tier | tojson }};
+
+    function syncDurability() {
+        const ap = document.getElementById("ap-select").value;
+        document.getElementById("durability-select").value = ap;
+    }
+
+    function syncTier() {
+        const ap = document.getElementById("ap-select").value;
+        const tier = AP_TO_TIER[ap];
+        if (tier) {
+            document.getElementById("tier-select").value = tier;
+        }
+    }
+</script>
+
+<script>
+$(document).ready(function() {
+    $("#hax-select").select2({
+        tags: true,
+        placeholder: "Select or type to add hax",
+        width: "100%",
+        tokenSeparators: [',']  // typing comma creates a new hax instantly
+    });
+});
+</script>
+
+
+{% endblock %}

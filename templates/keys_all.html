@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>All Keys</h2>
+
+<table>
+    <tr>
+        <th>Character</th>
+        <th>Verse</th>
+        <th>Key</th>
+        <th>Tier</th>
+        <th>AP</th>
+        <th>Speed</th>
+        <th>Durability</th>
+        <th>Hax</th>
+    </tr>
+
+    {% for k in keys %}
+    <tr>
+        <td>{{ k.character }}</td>
+        <td>{{ k.verse }}</td>
+        <td>{{ k.key_name }}</td>
+        <td>{{ k.tier }}</td>
+        <td>{{ k.ap }}</td>
+        <td>{{ k.speed }}</td>
+        <td>{{ k.durability }}</td>
+        <td>{{ k.hax_list if k.hax_list else "None" }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

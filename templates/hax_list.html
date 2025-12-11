@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Hax List</h2>
+
+<a class="btn" href="{{ url_for('add_hax') }}">Add New Hax</a>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Used By</th>
+    </tr>
+
+    {% for h in hax %}
+    <tr>
+        <td>{{ h.name }}</td>
+        <td>
+            {% if h.keys %}
+                {% for k in h.keys %}
+                    {{ k.key_name }} ({{ k.character.name }}){% if not loop.last %}, {% endif %}
+                {% endfor %}
+            {% else %}
+                <i>Unused</i>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

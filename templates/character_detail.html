@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ character.name }} ({{ character.verse_obj.name }})</h2>
+
+<h3>Keys</h3>
+
+<a href="{{ url_for('add_key', char_id=character.id) }}" class="btn">Add Key</a>
+
+<table>
+    <tr>
+        <th>Key Name</th>
+        <th>AP</th>
+        <th>Tier</th>
+        <th>Durability</th>
+        <th>Speed</th>
+        <th>Hax</th>
+        <th>Notes</th>
+    </tr>
+
+    {% for k in character.keys %}
+    <tr>
+        <td>{{ k.key_name }}</td>
+        <td>{{ k.ap }}</td>
+        <td>{{ k.tier }}</td>
+        <td>{{ k.durability }}</td>
+        <td>{{ k.speed }}</td>
+        <td>
+            {% for h in k.hax %}
+                {{ h.name }}{% if not loop.last %}, {% endif %}
+            {% endfor %}
+        </td>
+        <td>{{ k.notes }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

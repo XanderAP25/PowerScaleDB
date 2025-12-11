@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Add Verse</h2>
+
+<form method="post">
+
+    {% if error %}
+    <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <label>Verse Name</label>
+    <input type="text" name="name" required>
+
+    <button class="btn" type="submit">Save Verse</button>
+</form>
+
+{% endblock %}

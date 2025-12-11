@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Add Key for {{ character.name }}</h2>
+
+<form method="post">
+
+    <label>Key Name</label>
+    <input name="key_name" required>
+
+    <label>Attack Potency</label>
+    <select name="ap" id="ap-select" onchange="syncDurability(); syncTier();">
+        {% for a in AP %}
+        <option>{{ a }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Durability</label>
+    <select name="durability" id="durability-select">
+        {% for d in durs %}
+        <option>{{ d }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Speed</label>
+    <select name="speed">
+        {% for s in speeds %}
+        <option>{{ s }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Tier</label>
+    <select name="tier" id="tier-select">
+        {% for t in tiers %}
+        <option>{{ t }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Hax</label>
+    <select id="hax-select" name="hax_list" multiple>
+        {% for h in all_hax %}
+        <option value="{{ h.id }}">{{ h.name }}</option>
+        {% endfor %}
+    </select>
+
+
+    <label>Notes</label>
+    <textarea name="notes" rows="4"></textarea>
+
+    <button class="btn" type="submit">Save</button>
+</form>
+
+<script>
+    const AP_TO_TIER = {{ ap_to_tier | tojson }};
+
+    function syncDurability() {
+        const ap = document.getElementById("ap-select").value;
+        document.getElementById("durability-select").value = ap;
+    }
+
+    function syncTier() {
+        const ap = document.getElementById("ap-select").value;
+        const tier = AP_TO_TIER[ap];
+        if (tier) {
+            document.getElementById("tier-select").value = tier;
+        }
+    }
+</script>
+
+<script>
+$(document).ready(function() {
+    $("#hax-select").select2({
+        tags: true,
+        placeholder: "Select or type to add hax",
+        width: "300px"
+    });
+});
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>{{ verse.name }} — Keys</h2>
+
+{% if keys %}
+<table>
+    <tr>
+        <th>Character</th>
+        <th>Key</th>
+        <th>Tier</th>
+        <th>AP</th>
+        <th>Speed</th>
+        <th>Durability</th>
+        <th>Hax</th>
+    </tr>
+
+    {% for k in keys %}
+    <tr>
+        <td>{{ k.character }}</td>
+        <td>{{ k.key_name }}</td>
+        <td>{{ k.tier }}</td>
+        <td>{{ k.ap }}</td>
+        <td>{{ k.speed }}</td>
+        <td>{{ k.durability }}</td>
+        <td>{{ k.hax_list if k.hax_list else "None" }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% else %}
+<p>No characters or keys in this verse yet.</p>
+{% endif %}
+
+{% endblock %}
