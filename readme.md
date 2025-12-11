@@ -114,7 +114,7 @@ Verse (1)
 
 ## License
 
-This project is currently unlicensed.  
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 ---
 
