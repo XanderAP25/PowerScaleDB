@@ -83,6 +83,39 @@ Verse (1)
 - **Hax**
   - id, name
 
+## Architecture
+
+PowerScaleDB is built as a lightweight Flask application using SQLAlchemy for ORM modeling and Jinja2 for templating.
+
+The core components include:
+
+- models.py: SQLAlchemy models for Verse, Character, Key, and Hax, including the many-to-many relationship.
+- routes.py: Centralized view logic for all CRUD operations.
+- powerstats.py: Encapsulated tier-calculation logic derived from Attack Potency values.
+- templates/: Jinja2 templates for list views, detail pages, and dynamic forms.
+- static/: Custom CSS styling and Select2 integration for multi-hax selection.
+
+The app uses SQLite for persistence and automatically initializes its schema on first run.
+
+## Interface Preview
+
+### Character List
+<img width="2048" height="311" alt="image" src="https://github.com/user-attachments/assets/b7dfb15b-b2d2-4cb8-aff2-4bd80b6404dd" />
+
+### Keys List
+<img width="1653" height="790" alt="image" src="https://github.com/user-attachments/assets/45f1b965-0da9-40d2-bf2b-913fd8feb8f0" />
+
+### Verses List
+<img width="1662" height="628" alt="image" src="https://github.com/user-attachments/assets/21da65d6-9350-4bc6-8dbf-e40eb0345c0a" />
+
+### Hax List
+<img width="1658" height="1347" alt="image" src="https://github.com/user-attachments/assets/f08dc5aa-357b-403d-bc5e-948cb95a2a31" />
+
+### Key Addition Page
+<img width="1655" height="1139" alt="image" src="https://github.com/user-attachments/assets/0ed97c0a-753e-46c3-9866-c1b383f95774" />
+
+### Character Table With Keys
+<img width="1672" height="890" alt="image" src="https://github.com/user-attachments/assets/081d716c-c90d-4778-a491-42c0e654503f" />
 
 ## TODO
 
