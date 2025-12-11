@@ -1,1 +1,1 @@
-# placeholder for any fun changes taht happen in the future
+# placeholder for any fun changes that may happen in the future
