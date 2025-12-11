@@ -30,7 +30,7 @@ TIER_OPTIONS = [
     "6-C", "High 6-C", "Low 6-B",
     "6-B", "High 6-B", "6-A",
     "High 6-A",
-    "5-C","Low 5-B","5-B","5-A",
+    "5-C","Low 5-B","5-B","5-A","High 5-A",
     "Low 4-C", "4-C","High 4-C", "4-B","4-A",
     "3-C","3-B","3-A", "High 3-A",
     "Low 2-C", "2-C","2-B","2-A",

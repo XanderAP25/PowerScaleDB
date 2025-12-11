@@ -13,6 +13,7 @@
         <th>Speed</th>
         <th>Durability</th>
         <th>Hax</th>
+        <th>Actions</th>
     </tr>
 
     {% for k in keys %}
@@ -25,6 +26,15 @@
         <td>{{ k.speed }}</td>
         <td>{{ k.durability }}</td>
         <td>{{ k.hax_list if k.hax_list else "None" }}</td>
+        <td>
+            <form action="{{ url_for('main.delete_key', key_id=k.id) }}"
+                method="POST"
+                onsubmit="return confirm('Delete this key?');"
+                style="display:inline;">
+                <button class="btn" style="background:#700;">Delete</button>
+            </form>
+            <a class="btn" href="{{ url_for('main.edit_key', key_id=k.id) }}">Edit</a>
+        </td>
     </tr>
     {% endfor %}
 </table>
