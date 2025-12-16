@@ -6,6 +6,32 @@
 
 <a class="btn" href="{{ url_for('main.edit_verse', verse_id=verse.id) }}">Edit Verse</a>
 
+{% if not single %}
+    <form method="post"
+        action="{{ url_for('main.resequence_verse', verse_id=verse.id) }}"
+        style="display:inline;">
+        <button class="btn">Resequence Ranks</button>
+    </form>
+{% else %}
+    <a class="btn"
+       href="">
+        Resequence Unavailable
+    </a>
+{% endif %}
+
+{% if not single %}
+    <a class="btn"
+       href="{{ url_for('main.verse_detail', verse_id=verse.id, single=1) }}">
+        Show One Key per Character
+    </a>
+{% else %}
+    <a class="btn"
+       href="{{ url_for('main.verse_detail', verse_id=verse.id) }}">
+        Show All Ranked Keys
+    </a>
+{% endif %}
+
+
 
 {% if keys %}
 <table>
@@ -17,17 +43,35 @@
         <th>Speed</th>
         <th>Durability</th>
         <th>Hax</th>
+        <th>Rank</th>
     </tr>
 
     {% for k in keys %}
     <tr>
-        <td>{{ k.character }}</td>
+        <td>{{ k.character.name }}</td>
         <td>{{ k.key_name }}</td>
         <td>{{ k.tier }}</td>
         <td>{{ k.ap }}</td>
         <td>{{ k.speed }}</td>
         <td>{{ k.durability }}</td>
-        <td>{{ k.hax_list if k.hax_list else "None" }}</td>
+        <td>
+            {% if k.hax %}
+                {% for h in k.hax %}
+                    {{ h.name }}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            {% else %}
+                None
+            {% endif %}
+        </td>
+
+        <td>
+            {% if single %}
+                {{ loop.index }}
+            {% else %}
+                {{ k.rank if k.rank is not none else "-" }}
+            {% endif %}
+        </td>
+
     </tr>
     {% endfor %}
 </table>

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Compare Keys</h2>
+
+<form method="post">
+    <label>Key A</label>
+    <select name="key_a" required>
+        <option value="">-- Select Key --</option>
+        {% for k in keys %}
+        <option value="{{ k.id }}">
+            [{{ k.verse }}] {{ k.character }} — {{ k.key_name }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label>Key B</label>
+    <select name="key_b" required>
+        <option value="">-- Select Key --</option>
+        {% for k in keys %}
+        <option value="{{ k.id }}">
+            [{{ k.verse }}] {{ k.character }} — {{ k.key_name }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <button class="btn" type="submit">Compare</button>
+</form>
+
+{% if error %}
+<p style="color:red;">{{ error }}</p>
+{% endif %}
+
+{% if key_a and key_b %}
+<hr>
+
+<table>
+    <tr>
+        <th>Stat</th>
+        <th>{{ key_a.character.name }} — {{ key_a.key_name }}</th>
+        <th>{{ key_b.character.name }} — {{ key_b.key_name }}</th>
+    </tr>
+
+    <tr>
+        <td>Verse</td>
+        <td>{{ key_a.character.verse_obj.name }}</td>
+        <td>{{ key_b.character.verse_obj.name }}</td>
+    </tr>
+
+    <tr>
+        <td>Tier</td>
+        <td>{{ key_a.tier }}</td>
+        <td>{{ key_b.tier }}</td>
+    </tr>
+
+    <tr>
+        <td>Attack Potency</td>
+        <td>{{ key_a.ap }}</td>
+        <td>{{ key_b.ap }}</td>
+    </tr>
+
+    <tr>
+        <td>Speed</td>
+        <td>{{ key_a.speed }}</td>
+        <td>{{ key_b.speed }}</td>
+    </tr>
+
+    <tr>
+        <td>Durability</td>
+        <td>{{ key_a.durability }}</td>
+        <td>{{ key_b.durability }}</td>
+    </tr>
+
+    <tr>
+        <td>Hax</td>
+        <td>
+            {{ key_a.hax | map(attribute='name') | join(', ') if key_a.hax else "None" }}
+        </td>
+        <td>
+            {{ key_b.hax | map(attribute='name') | join(', ') if key_b.hax else "None" }}
+        </td>
+    </tr>
+
+    <tr>
+        <td>Notes</td>
+        <td><pre>{{ key_a.notes or "—" }}</pre></td>
+        <td><pre>{{ key_b.notes or "—" }}</pre></td>
+    </tr>
+</table>
+{% endif %}
+
+{% endblock %}

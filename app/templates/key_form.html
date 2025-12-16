@@ -8,6 +8,14 @@
     <label>Key Name</label>
     <input name="key_name" required>
 
+    <label>Copy From Existing Key</label>
+    <select id="prefill-key-select">
+        <option value="">— Select a key —</option>
+        {% for k in character.keys %}
+            <option value="{{ k.id }}">{{ k.key_name }}</option>
+        {% endfor %}
+    </select>
+
     <label>Attack Potency</label>
     <select name="ap" id="ap-select" onchange="syncDurability(); syncTier();">
         {% for a in AP %}
@@ -43,6 +51,11 @@
         {% endfor %}
     </select>
 
+    <label>Power Rank (Verse)</label>
+    <input type="number"
+        name="rank"
+        min="1"
+        placeholder="Optional (1 = strongest)">
 
     <label>Notes</label>
     <textarea name="notes" rows="4"></textarea>
@@ -76,6 +89,38 @@ $(document).ready(function() {
     });
 });
 </script>
+
+<script>
+document.getElementById("prefill-key-select").addEventListener("change", async function () {
+    const keyId = this.value;
+    if (!keyId) return;
+
+    const response = await fetch(`/key/${keyId}/prefill`, {
+        headers: { "Accept": "application/json" }
+    });
+
+    const data = await response.json();
+
+    // Basic fields
+    document.getElementById("ap-select").value = data.ap;
+    document.getElementById("tier-select").value = data.tier;
+    document.getElementById("durability-select").value = data.durability;
+    document.querySelector("select[name='speed']").value = data.speed;
+    document.querySelector("textarea[name='notes']").value = data.notes || "";
+
+    // Hax (Select2)
+    const haxSelect = $("#hax-select");
+    haxSelect.val(null).trigger("change");
+
+    data.hax.forEach(h => {
+        const option = new Option(h.name, h.id, true, true);
+        haxSelect.append(option);
+    });
+
+    haxSelect.trigger("change");
+});
+</script>
+
 
 
 {% endblock %}

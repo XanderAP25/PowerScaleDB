@@ -46,7 +46,12 @@ class Key(db.Model):
     tier = db.Column(db.String(200))
     durability = db.Column(db.String(200))
     speed = db.Column(db.String(200))
+    rank = db.Column(db.Integer, nullable=True)
 
     notes = db.Column(db.String(2000))
 
     hax = db.relationship("Hax", secondary=key_hax_table, backref="keys")
+
+    __table_args__ = (
+        db.Index("ix_key_verse_rank", "rank"),
+    )

@@ -36,6 +36,13 @@
         {% endfor %}
     </select>
 
+    <label>Power Rank (Verse)</label>
+    <input type="number"
+        name="rank"
+        min="1"
+        value="{{ key.rank if key.rank is not none else '' }}">
+
+
     <label>Hax</label>
     <select name="hax_list" multiple="multiple" id="hax-select">
         {% for h in all_hax %}

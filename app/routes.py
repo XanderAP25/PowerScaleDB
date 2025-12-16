@@ -5,6 +5,9 @@ from .powerstats import (
     DURABILITY_OPTIONS, AP_TO_TIER, tier_from_ap
 )
 from sqlalchemy import func
+from app.utils.ranking import assign_rank, resequence_ranks, show_one_key
+from sqlalchemy.exc import IntegrityError
+
 
 bp = Blueprint("main", __name__)
 
@@ -82,23 +85,33 @@ def add_character():
                 if h.isdigit():
                     obj = Hax.query.get(int(h))
                 else:
-                    obj = Hax(name=h)
-                    db.session.add(obj)
+                    obj = Hax.query.filter_by(name=h).first()
+                    if not obj:
+                        obj = Hax(name=h)
+                        db.session.add(obj)
                 hax_objects.append(obj)
 
-            new_key = Key(
-                character_id=new_char.id,
-                key_name=key_name,
-                ap=ap,
-                tier=tier,
-                speed=speed,
-                durability=durability,
-                notes=notes,
-                hax=hax_objects
-            )
+        rank = request.form.get("rank")
 
-            db.session.add(new_key)
-            db.session.commit()
+        new_key = Key(
+            character_id=new_char.id,
+            key_name=key_name,
+            ap=ap,
+            tier=tier,
+            speed=speed,
+            durability=durability,
+            notes=notes,
+            hax=hax_objects
+        )
+
+        db.session.add(new_key)
+        db.session.flush()  # REQUIRED so new_key.id exists
+
+        if rank:
+            assign_rank(new_key, new_char.verse_id, int(rank))
+
+        db.session.commit()
+
 
         return redirect(url_for("main.character_detail", char_id=new_char.id))
 
@@ -142,13 +155,18 @@ def add_key(char_id):
 
         raw_hax = request.form.getlist("hax_list")
         hax_objects = []
+
         for h in raw_hax:
             if h.isdigit():
                 obj = Hax.query.get(int(h))
             else:
-                obj = Hax(name=h)
-                db.session.add(obj)
+                obj = Hax.query.filter_by(name=h).first()
+                if not obj:
+                    obj = Hax(name=h)
+                    db.session.add(obj)
             hax_objects.append(obj)
+
+        rank = request.form.get("rank")
 
         new_key = Key(
             character_id=char_id,
@@ -158,10 +176,15 @@ def add_key(char_id):
             durability=durability or ap,
             speed=speed,
             notes=notes,
-            hax=hax_objects
+            hax=hax_objects,
         )
 
         db.session.add(new_key)
+        db.session.flush()  # gives new_key.id
+
+        if rank:
+            assign_rank(new_key, character.verse_id, rank)
+
         db.session.commit()
 
         return redirect(url_for("main.character_detail", char_id=char_id))
@@ -211,30 +234,33 @@ def all_keys():
 @bp.route("/verse/<int:verse_id>")
 def verse_detail(verse_id):
     verse = Verse.query.get_or_404(verse_id)
+    single = request.args.get("single") == "1"
 
-    keys = (
-        db.session.query(
-            Key.id,
-            Key.key_name,
-            Key.ap,
-            Key.tier,
-            Key.speed,
-            Key.durability,
-            Character.name.label("character"),
-            Verse.name.label("verse"),
-            func.group_concat(Hax.name, ", ").label("hax_list")
+    if single:
+        keys = show_one_key(verse_id)
+    else:
+        keys = (
+            Key.query
+            .join(Character)
+            .filter(Character.verse_id == verse_id)
+            .options(
+                db.joinedload(Key.character),
+                db.joinedload(Key.hax)
+            )
+            .order_by(Key.rank.asc().nullslast(), Character.name)
+            .all()
         )
-        .select_from(Key)
-        .join(Character, Key.character_id == Character.id)
-        .join(Verse, Character.verse_id == Verse.id)
-        .outerjoin(Key.hax)
-        .filter(Verse.id == verse_id)
-        .group_by(Key.id)
-        .order_by(Character.name, Key.key_name)
-        .all()
+
+
+
+
+    return render_template(
+        "verse_detail.html",
+        verse=verse,
+        keys=keys,
+        single=single
     )
 
-    return render_template("verse_detail.html", verse=verse, keys=keys)
 
 # Hax list
 
@@ -286,11 +312,29 @@ def delete_character(char_id):
 @bp.route("/key/<int:key_id>/delete", methods=["POST"])
 def delete_key(key_id):
     key = Key.query.get_or_404(key_id)
+    verse_id = key.character.verse_id
+    old_rank = key.rank
 
     db.session.delete(key)
-    db.session.commit()
 
+    if old_rank is not None:
+        keys_to_shift = (
+            Key.query
+            .join(Character)
+            .filter(
+                Character.verse_id == verse_id,
+                Key.rank.isnot(None),
+                Key.rank > old_rank
+            )
+            .all()
+        )
+
+        for k in keys_to_shift:
+            k.rank -= 1
+
+    db.session.commit()
     return redirect(url_for("main.character_detail", char_id=key.character_id))
+
 
 @bp.route("/hax/<int:hax_id>/delete", methods=["POST"])
 def delete_hax(hax_id):
@@ -336,6 +380,7 @@ def edit_character(char_id):
 def edit_key(key_id):
     key = Key.query.get_or_404(key_id)
     character = key.character
+    verse_id = character.verse_id
 
     if request.method == "POST":
         key.key_name = request.form.get("key_name", "").strip()
@@ -348,6 +393,8 @@ def edit_key(key_id):
         key.durability = request.form.get("durability", ap)
         key.notes = request.form.get("notes", "").strip()
 
+        new_rank = request.form.get("rank")
+
         raw_hax = request.form.getlist("hax_list")
         hax_objects = []
 
@@ -355,9 +402,18 @@ def edit_key(key_id):
             if h.isdigit():
                 obj = Hax.query.get(int(h))
             else:
-                obj = Hax(name=h)
-                db.session.add(obj)
+                obj = Hax.query.filter_by(name=h).first()
+                if not obj:
+                    obj = Hax(name=h)
+                    db.session.add(obj)
             hax_objects.append(obj)
+
+        if new_rank:
+            new_rank = int(new_rank)
+            if new_rank != key.rank:
+                assign_rank(key, verse_id, new_rank)
+        else:
+            key.rank = None
 
         key.hax = hax_objects
 
@@ -405,3 +461,79 @@ def edit_hax(hax_id):
         return redirect(url_for("main.hax_list"))
 
     return render_template("edit_hax.html", hax=h)
+
+# Compare keys
+
+@bp.route("/compare", methods=["GET", "POST"])
+def compare_keys():
+    # Fetch all keys for dropdowns
+    keys = (
+        db.session.query(
+            Key.id,
+            Key.key_name,
+            Character.name.label("character"),
+            Verse.name.label("verse")
+        )
+        .select_from(Key)
+        .join(Character, Key.character_id == Character.id)
+        .join(Verse, Character.verse_id == Verse.id)
+        .order_by(Verse.name, Character.name, Key.key_name)
+        .all()
+    )
+
+
+    key_a = None
+    key_b = None
+    error = None
+
+    if request.method == "POST":
+        key_a_id = request.form.get("key_a")
+        key_b_id = request.form.get("key_b")
+
+        if not key_a_id or not key_b_id:
+            error = "Select two keys to compare."
+        elif key_a_id == key_b_id:
+            error = "You must select two different keys."
+        else:
+            key_a = Key.query.get(key_a_id)
+            key_b = Key.query.get(key_b_id)
+
+            if not key_a or not key_b:
+                error = "One or both keys could not be found."
+
+    return render_template(
+        "compare_keys.html",
+        keys=keys,
+        key_a=key_a,
+        key_b=key_b,
+        error=error
+    )
+
+# Prefill key
+
+@bp.route("/key/<int:key_id>/prefill")
+def prefill_key(key_id):
+    key = Key.query.get_or_404(key_id)
+
+    return {
+        "ap": key.ap,
+        "tier": key.tier,
+        "durability": key.durability,
+        "speed": key.speed,
+        "notes": key.notes,
+        "hax": [
+            {"id": h.id, "name": h.name}
+            for h in key.hax
+        ]
+    }
+
+# resequence ranks
+
+@bp.route("/verse/<int:verse_id>/resequence", methods=["POST"])
+def resequence_verse(verse_id):
+    verse = Verse.query.get_or_404(verse_id)
+
+    resequence_ranks(verse.id)
+    db.session.commit()
+
+    return redirect(url_for("main.verse_detail", verse_id=verse.id))
